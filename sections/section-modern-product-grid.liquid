@@ -5,6 +5,7 @@
 {%- style -%}
   .mpg-{{ section.id }} {
     --mpg-accent: {{ section.settings.accent_color }};
+    --mpg-clip: url("#mpg-card-clip-{{ section.id }}");
   }
 
   .section-{{ section.id }}-padding {
@@ -22,6 +23,18 @@
 
 {% comment %} 3. Markup {% endcomment %}
 <div class="mpg-{{ section.id }} color-{{ section.settings.color_scheme }} gradient">
+  {% comment %} Reusable clip shape: rounded card silhouette with the bottom-right notch.
+     objectBoundingBox units (0–1) so it scales with each card. {% endcomment %}
+  <svg width="0" height="0" class="mpg-defs" aria-hidden="true" focusable="false">
+    <defs>
+      <clipPath id="mpg-card-clip-{{ section.id }}" clipPathUnits="objectBoundingBox">
+        <path
+          d="M0.08 0 H0.92 A0.08 0.08 0 0 1 1 0.08 V0.77 A0.23 0.23 0 0 1 0.77 1 H0.08 A0.08 0.08 0 0 1 0 0.92 V0.08 A0.08 0.08 0 0 1 0.08 0 Z"
+        />
+      </clipPath>
+    </defs>
+  </svg>
+
   <div class="page-width section-{{ section.id }}-padding">
     {%- if section.settings.heading != blank or section.settings.subheading != blank -%}
       <div class="mpg-header">
@@ -94,6 +107,16 @@
                     >
                   {%- endif -%}
                 </div>
+
+                <svg class="mpg-card__outline" viewBox="0 0 200 200" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                  <path
+                    d="M16 0 H184 A16 16 0 0 1 200 16 V154 A46 46 0 0 1 154 200 H16 A16 16 0 0 1 0 184 V16 A16 16 0 0 1 16 0 Z"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1"
+                    vector-effect="non-scaling-stroke"
+                  />
+                </svg>
 
                 <h3 class="mpg-card__title">
                   <a class="mpg-card__link" href="{{ product.url }}">

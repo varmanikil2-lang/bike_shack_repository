@@ -1,49 +1,51 @@
 /*
  * Modern Product Grid
- * Staggered collection grid with notched card outlines and a CSS-only
- * elliptical hover reveal of the product's second image.
+ * Staggered collection grid with a continuous notched outline (inline SVG)
+ * and a CSS-only elliptical hover reveal of the product's second image.
  * Self-contained — all selectors are namespaced with `mpg-`.
  */
 
 .mpg-grid {
-  --mpg-gap: clamp(0.75rem, 2vw, 1.5rem);
-  --mpg-radius: 1rem;
-  --mpg-pad: clamp(0.75rem, 1.5vw, 1.25rem);
-  --mpg-notch: clamp(52px, 7vw, 84px);
-  --mpg-outline-width: 1px;
-  --mpg-outline-color: rgba(var(--color-foreground), 0.18);
-  /* Vertical offset applied to the staggered (even) columns. */
-  --mpg-offset: 32%;
-  --mpg-reveal-duration: 0.55s;
+  /* Notch geometry — kept in sync with the inline SVG path (viewBox 200x200,
+     corner r=16 -> 8%, notch r=46 -> 23%). The card is square so x/y match. */
+  --mpg-corner: 8%;
+  --mpg-notch: 23%;
+  --mpg-outline-color: rgba(var(--color-foreground), 0.22);
+  --mpg-reveal-duration: 0.6s;
   --mpg-reveal-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Fixed-length stagger offset so it can be exactly compensated below. */
+  --mpg-offset: clamp(1.5rem, 9vw, 3.5rem);
 
   list-style: none;
   margin: 0;
-  /* Bottom padding compensates for the transform-offset columns, which do
-     not add layout height, so the pagination below keeps its clearance. */
-  padding: 0 0 clamp(2rem, 7vw, 5rem);
+  /* Compensate for the transform-offset columns (which add no layout height)
+     so pagination/footer always clear the staggered last row. */
+  padding: 0 0 calc(var(--mpg-offset) + 1rem);
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--mpg-gap);
+  gap: clamp(0.75rem, 2vw, 1.5rem);
 }
 
 @media screen and (min-width: 750px) {
   .mpg-grid {
-    --mpg-offset: 40%;
+    --mpg-offset: clamp(2.5rem, 5vw, 5.5rem);
     grid-template-columns: repeat(4, 1fr);
     gap: clamp(1rem, 2.5vw, 2rem);
   }
 }
 
+/* Clear gap between the grid and Dawn's pagination snippet. */
+.mpg-grid + .pagination-wrapper {
+  margin-top: clamp(2rem, 5vw, 4rem);
+}
+
 /* ---- Stagger -------------------------------------------------------------
-   Even columns sit ~half a card lower. translateY keeps each column's flow
-   independent (no neighbour push). */
+   Even columns sit lower. translateY keeps each column's flow independent. */
 .mpg-card:nth-child(2n) {
   transform: translateY(var(--mpg-offset));
 }
 
 @media screen and (min-width: 750px) {
-  /* Reset the mobile rule, then offset the 2nd and 4th desktop columns. */
   .mpg-card:nth-child(2n) {
     transform: none;
   }
@@ -61,46 +63,29 @@
 
 .mpg-card__inner {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: var(--mpg-pad);
-  border-radius: var(--mpg-radius);
+  aspect-ratio: 1 / 1;
 }
 
-/* Outline drawn on a pseudo-element so we can mask a notch out of the
-   lower-right corner without affecting the card content. */
-.mpg-card__inner::before {
-  content: "";
+/* Hidden SVG holding the clip-path definition. */
+.mpg-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* ---- Media + images ------------------------------------------------------
+   Media fills the whole card interior and is clipped to the exact notched
+   silhouette (same shape as the outline), so the image fills inside the
+   outline — including the notch — without bleeding past it. The rounded-rect
+   fallback applies if clip-path url() is unsupported. */
+.mpg-card__media {
   position: absolute;
   inset: 0;
-  border: var(--mpg-outline-width) solid var(--mpg-outline-color);
-  border-radius: inherit;
-  pointer-events: none;
-  transition: border-color 0.2s ease;
-  -webkit-mask: radial-gradient(
-    circle at bottom right,
-    transparent 0 var(--mpg-notch),
-    #000 calc(var(--mpg-notch) + 0.5px)
-  );
-  mask: radial-gradient(
-    circle at bottom right,
-    transparent 0 var(--mpg-notch),
-    #000 calc(var(--mpg-notch) + 0.5px)
-  );
-}
-
-/* Accent outline on keyboard focus. */
-.mpg-card:focus-within .mpg-card__inner::before {
-  border-color: var(--mpg-accent);
-}
-
-/* ---- Media + hover reveal ------------------------------------------------ */
-.mpg-card__media {
-  position: relative;
-  aspect-ratio: 1 / 1;
-  border-radius: calc(var(--mpg-radius) - var(--mpg-pad) / 2);
+  z-index: 0;
+  border-radius: var(--mpg-corner);
   overflow: hidden;
+  clip-path: var(--mpg-clip);
 }
 
 .mpg-card__image {
@@ -112,33 +97,56 @@
 }
 
 /* Secondary image starts clipped to nothing at the top edge; the rounded
-   bottom of the clip gives the elliptical leading edge as it sweeps down. */
+   bottom of the clip gives the elliptical leading edge as it sweeps down,
+   ending fully covering the card (no leftover unfilled area). */
 .mpg-card__image--secondary {
-  clip-path: inset(0 0 100% 0 round 0 0 45% 45% / 0 0 70% 70%);
+  clip-path: inset(0 0 100% 0 round 0 0 45% 45% / 0 0 60% 60%);
   transition: clip-path var(--mpg-reveal-duration) var(--mpg-reveal-ease);
   will-change: clip-path;
 }
 
 .mpg-card:hover .mpg-card__image--secondary,
 .mpg-card:focus-within .mpg-card__image--secondary {
-  clip-path: inset(0 0 0 0 round 0 0 45% 45% / 0 0 70% 70%);
+  clip-path: inset(0 0 0 0 round 0 0 0 0);
+}
+
+/* ---- Outline (inline SVG, continuous notch) ------------------------------ */
+.mpg-card__outline {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  color: var(--mpg-outline-color);
+  pointer-events: none;
+  transition: color 0.2s ease;
+  overflow: visible;
+}
+
+.mpg-card:hover .mpg-card__outline,
+.mpg-card:focus-within .mpg-card__outline {
+  color: var(--mpg-accent);
 }
 
 /* ---- Title (sits in the notch) ------------------------------------------- */
 .mpg-card__title {
-  align-self: flex-end;
-  max-width: 85%;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  max-width: 60%;
   margin: 0;
-  padding: 0.65rem 0.15rem 0.1rem 0;
+  padding: 0 0.5rem 0.4rem 0;
   text-align: right;
-  font-size: 1rem;
-  line-height: 1.25;
+  font-size: 0.95rem;
+  line-height: 1.2;
   font-weight: 600;
 }
 
 .mpg-card__link {
   text-decoration: none;
   color: rgb(var(--color-foreground));
+  text-shadow: 0 1px 3px rgba(var(--color-background), 0.8);
 }
 
 /* Stretch the title link across the whole card so the entire card is
@@ -147,7 +155,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 4;
 }
 
 .mpg-card__link:focus {
@@ -155,7 +163,7 @@
 }
 
 .mpg-card__title-text {
-  /* Keep long titles from breaking the outline. */
+  /* Keep long titles from spilling out of the notch. */
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
