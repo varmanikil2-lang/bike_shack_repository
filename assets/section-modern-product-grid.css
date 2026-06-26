@@ -63,8 +63,8 @@
 .mpg-card__inner {
   position: relative;
   /* Slightly taller than wide to give room for the bottom-right title shelf.
-     Must match the SVG outline viewBox ratio (200 x 220). */
-  aspect-ratio: 200 / 220;
+     Must match the SVG outline viewBox ratio (200 x 208). */
+  aspect-ratio: 200 / 208;
 }
 
 /* Hidden SVG holding the clip-path definition. */
@@ -129,15 +129,15 @@
   color: var(--mpg-accent);
 }
 
-/* ---- Title (sits in the bottom-right shelf) ------------------------------
-   Positioned inside the stepped shelf with padding so it never crosses the
-   outline stroke. */
+/* ---- Title (sits in the bottom-right notch/shelf) ------------------------
+   Centered within the lower-right label area — lifted off the corner and not
+   pushed too low, and padded so it never crosses the outline stroke. */
 .mpg-card__title {
   position: absolute;
-  right: 5%;
-  bottom: 3.5%;
+  right: 4%;
+  bottom: 7%;
   z-index: 3;
-  max-width: 38%;
+  max-width: 32%;
   margin: 0;
   text-align: right;
   font-size: 0.9rem;

@@ -10,29 +10,29 @@ Implementation plan: `.claude/features/feature-modern-product-grid/OUTPUT-implem
 3. Repeat until everything passes
 4. Previous rounds are kept as a log below the current round
 
-## Current Round (Round 3)
+## Current Round (Round 4)
 
 Status: Testing
 
 Mark each item: `[y]` = pass, leave `[ ]` = fail (add a note in brackets). Items not re-tested can be left blank — the full re-test happens at the end.
 
-### Card outline / notch  ← REWORKED THIS ROUND (step shape, not a diagonal)
-- [The current card shape is still not correct. Please refine only the container outline and text placement so it is closer to the reference file Desktop 5 - Border Closeup.jpg. Focus on the shape of the border, the lower-right notch, and where the title sits. The outline should be a smooth, continuous custom border with more generous rounded outer corners. The bottom edge should not look like a detached or centered cutout; it should stay mostly continuous and then transition into an integrated lower-right notch area. The notch should feel built into the border shape, with a straight lower edge, a softly rounded step/notch section, and a clean continuation toward the right side. The inner notch corner should not be a sharp 90-degree angle; it needs a small rounded curve so the whole shape feels smooth and organic rather than mechanical. The product title should be positioned in the lower-right label area, aligned with the notch, not too low, not pushed into the corner, and not separated from the outline structure. Overall, the container should read as a premium custom card with a continuous rounded outline, an integrated lower-right notch/step, and the title placed neatly within that lower-right notch area.] The bottom outline runs straight, then **steps down** with a short rounded riser into a lower-right shelf, then continues straight to the bottom-right corner — one continuous line, no diagonal. Compare to "Desktop 2 - Outline Accent Color"
-- [ ] The step/shelf reads as an intentional part of the card shape
-- [ ] The product title sits inside the shelf and does NOT cross/overlap the outline stroke
+### Card outline / notch  ← REFINED THIS ROUND (generous corners, soft integrated step)
+- [ ] Outer corners are generously rounded; the outline is one smooth continuous line
+- [ ] The bottom edge stays mostly straight, then transitions via a soft, integrated step into the lower-right shelf (not a centered/detached cutout, no sharp inner corner)
+- [ ] The title sits neatly in the lower-right label area — not too low, not jammed in the corner, and never crossing the outline stroke
+- [ ] Overall the card reads as a premium custom shape close to "Desktop 5 - Border Closeup"
 - [ ] Outline renders cleanly with no rough edges (Chrome, Safari, Firefox)
 
 ### Hover reveal
-- [This is looking good.] Hovering a card changes the outline color to the accent color
 - [ ] The secondary image sweeps down with the elliptical leading edge
 - [ ] At the end of the sweep, the secondary image fully covers the card interior down to the stepped bottom (no unfilled strip)
 - [ ] The transition feels premium (not too fast)
 - [ ] Moving the mouse away reverses the sweep and restores the primary image
 - [ ] Products with only ONE image do not reveal anything on hover (stay on primary, no glitch)
 
-### Pagination  ← BUG FIX THIS ROUND
+### Pagination
 - [ ] With more products than the per-page count, page 1 shows products + pagination
-- [ ] Clicking to page 2 shows the next products AND keeps the pagination visible (the page-2-empty bug is fixed)
+- [ ] Clicking to page 2 shows the next products AND keeps the pagination visible
 - [ ] Pagination links navigate correctly across all pages (4 / 8 / 12 per page)
 - [ ] Pagination sits clearly below the staggered last row with breathing room
 - [ ] At 12 per page (desktop and mobile): last row + pagination clear the footer, no overlap
@@ -75,6 +75,26 @@ Mark each item: `[y]` = pass, leave `[ ]` = fail (add a note in brackets). Items
 - [ ] No new global CSS/JS leaking into other sections (styles scoped to this section only)
 
 ## Previous Rounds
+
+### Round 3 — Status: Failed (fixes applied, see Round 4)
+
+Note: user focused on the outline/notch shape; confirmed the hover accent color is good. Other items deferred.
+
+#### Card outline / notch
+#### [FAIL] The bottom outline steps down into a lower-right shelf (step shape, not diagonal)
+**User feedback:** Step shape was on the right track but still not correct vs "Desktop 5 - Border Closeup": wanted more generous rounded outer corners; the bottom edge to stay mostly continuous then transition into an *integrated* lower-right notch (not a detached/centered cutout); the inner notch corner softened (no near-90°); and the title placed neatly in the lower-right label area — not too low, not pushed into the corner.
+**Fix:** Reshaped the path — outer corner radius 12→22 (generous), step corners enlarged to 18 with a near-zero riser so it reads as a soft, organic step; shelf integrated into the lower-right; card viewBox/aspect 200×220 → 200×208. Title lifted and pulled off the corner (bottom 3.5%→7%, right 5%→4%, max-width 38%→32%). **Verified by rendering the path headless (Edge screenshot) before shipping** — confirmed generous corners, soft integrated step, rounded inner corner, and title seated in the shelf clear of the stroke.
+#### [SKIPPED] The step/shelf reads as intentional — addressed by the reshape, re-test in Round 4
+#### [SKIPPED] Title sits inside the shelf without crossing the outline — addressed by the reshape, re-test in Round 4
+#### [SKIPPED] Outline renders cleanly with no rough edges — not re-tested this round
+
+#### Hover reveal
+#### [PASS] Hovering a card changes the outline color to the accent color
+**User note:** "This is looking good."
+#### [SKIPPED] Remaining hover-reveal items — deferred this round
+
+#### Settings / Pagination / Core / Edge cases / Mobile / Accessibility / Coexistence
+#### [SKIPPED] Deferred by user — to be re-tested at the final pass
 
 ### Round 2 — Status: Failed (fixes applied, see Round 3)
 
