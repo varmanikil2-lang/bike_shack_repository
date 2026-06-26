@@ -6,10 +6,9 @@
  */
 
 .mpg-grid {
-  /* Notch geometry — kept in sync with the inline SVG path (viewBox 200x200,
-     corner r=16 -> 8%, notch r=46 -> 23%). The card is square so x/y match. */
-  --mpg-corner: 8%;
-  --mpg-notch: 23%;
+  /* Fallback corner radius (used only if clip-path url() is unsupported).
+     The real shape comes from the inline SVG clip-path / outline path. */
+  --mpg-corner: 6%;
   --mpg-outline-color: rgba(var(--color-foreground), 0.22);
   --mpg-reveal-duration: 0.6s;
   --mpg-reveal-ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -63,7 +62,9 @@
 
 .mpg-card__inner {
   position: relative;
-  aspect-ratio: 1 / 1;
+  /* Slightly taller than wide to give room for the bottom-right title shelf.
+     Must match the SVG outline viewBox ratio (200 x 220). */
+  aspect-ratio: 200 / 220;
 }
 
 /* Hidden SVG holding the clip-path definition. */
@@ -128,17 +129,18 @@
   color: var(--mpg-accent);
 }
 
-/* ---- Title (sits in the notch) ------------------------------------------- */
+/* ---- Title (sits in the bottom-right shelf) ------------------------------
+   Positioned inside the stepped shelf with padding so it never crosses the
+   outline stroke. */
 .mpg-card__title {
   position: absolute;
-  right: 0;
-  bottom: 0;
+  right: 5%;
+  bottom: 3.5%;
   z-index: 3;
-  max-width: 60%;
+  max-width: 38%;
   margin: 0;
-  padding: 0 0.5rem 0.4rem 0;
   text-align: right;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   line-height: 1.2;
   font-weight: 600;
 }

@@ -10,54 +10,50 @@ Implementation plan: `.claude/features/feature-modern-product-grid/OUTPUT-implem
 3. Repeat until everything passes
 4. Previous rounds are kept as a log below the current round
 
-## Current Round (Round 2)
+## Current Round (Round 3)
 
 Status: Testing
 
-We've provided the most important feedback for the next round and everything that's not answered here, we've kind of tested in the first run already. We will test this in the end again just to make sure everything is working, but let's do the next round of revisions.
+Mark each item: `[y]` = pass, leave `[ ]` = fail (add a note in brackets). Items not re-tested can be left blank — the full re-test happens at the end.
 
-Mark each item: `[y]` = pass, leave `[ ]` = fail (add a note in brackets). All items are reset so fixes from Round 1 can be re-verified alongside everything else.
-
-### Core behavior
-- [ ] Section can be added to a collection template from the theme customizer ("Modern Product Grid")
-- [ ] Grid shows the products of the collection it's placed on (no collection picker needed)
-- [ ] Desktop shows 4 columns
-- [ ] Mobile shows 2 columns
-- [ ] Even columns (2nd & 4th) are offset down ~half a card on desktop
-- [ ] Each card shows the product's primary image and its title (title only — no price/year)
-- [ ] Clicking anywhere on the card (or the title) navigates to the correct product page
-
-### Card outline / notch  ← FIXED THIS ROUND
-- [Okay, I feel I need to describe this differently because I don't want this diagonal at all. Please take a look back at our reference images, specifically Desktop 2 Outline Accent, because that makes it very visible. And then take a look at the outline. You can see that the bottom border is not cut off or anything. It's more like there's a step in the middle of that. So we have a straight line, then there's a step, and then a straight line again to the bottom right corner. So this is more what I mean. Please take a look and refine this. The product title must not overlap the outline.] The outline is one continuous line — it runs along the bottom, curves smoothly into a rounded notch at the lower-right, then curves back up into the right edge (no gap or broken section). Compare to "Desktop 5 - Border Closeup"
-- [Refer to previous point] The notch reads as an intentional part of the card shape, not a missing piece of border
-- [You made a mistake here] The product title sits within the notch area and does not cross/overlap the outline
+### Card outline / notch  ← REWORKED THIS ROUND (step shape, not a diagonal)
+- [ ] The bottom outline runs straight, then **steps down** with a short rounded riser into a lower-right shelf, then continues straight to the bottom-right corner — one continuous line, no diagonal. Compare to "Desktop 2 - Outline Accent Color"
+- [ ] The step/shelf reads as an intentional part of the card shape
+- [ ] The product title sits inside the shelf and does NOT cross/overlap the outline stroke
 - [ ] Outline renders cleanly with no rough edges (Chrome, Safari, Firefox)
 
-### Hover reveal  ← FIXED THIS ROUND
-- [y] Hovering a card changes the outline color to the accent color (same as the focus color)
-- [y] The secondary image sweeps down with the elliptical leading edge
-- [ ] At the end of the sweep, the secondary image FULLY covers the card interior, including the lower notched area (no unfilled strip at the bottom)
-- [y] The transition feels premium (not too fast)
-- [y] Moving the mouse away reverses the sweep and restores the primary image
+### Hover reveal
+- [ ] Hovering a card changes the outline color to the accent color
+- [ ] The secondary image sweeps down with the elliptical leading edge
+- [ ] At the end of the sweep, the secondary image fully covers the card interior down to the stepped bottom (no unfilled strip)
+- [ ] The transition feels premium (not too fast)
+- [ ] Moving the mouse away reverses the sweep and restores the primary image
 - [ ] Products with only ONE image do not reveal anything on hover (stay on primary, no glitch)
+
+### Pagination  ← BUG FIX THIS ROUND
+- [ ] With more products than the per-page count, page 1 shows products + pagination
+- [ ] Clicking to page 2 shows the next products AND keeps the pagination visible (the page-2-empty bug is fixed)
+- [ ] Pagination links navigate correctly across all pages (4 / 8 / 12 per page)
+- [ ] Pagination sits clearly below the staggered last row with breathing room
+- [ ] At 12 per page (desktop and mobile): last row + pagination clear the footer, no overlap
 
 ### Settings (customizer)
 - [ ] Products-per-page offers 4 / 8 / 12 and defaults to 8
-- [Pagination is broken now. Second page displays no products and no pagination for some reason. Please fix this so that pagination functionality is maintained.] At 12 products on desktop: pagination stays visible and the last row is never cut off / hidden behind the footer at any desktop width  ← FIXED THIS ROUND
 - [ ] Accent color setting changes the outline color (focus AND hover) live
 - [ ] Optional heading / subheading appear when filled and are hidden when left empty
 - [ ] Color scheme setting changes the section background/text per the chosen scheme
 - [ ] Padding top/bottom sliders adjust spacing (with the 0.75 mobile multiplier)
 
-### Pagination + spacing  ← FIXED THIS ROUND
-- [ ] When products exceed the per-page count, numbered pagination appears clearly BELOW the full grid (not inside/among the cards)
-- [ ] There is clear vertical space between the last (staggered) row and the pagination — it does not feel squeezed
-- [ ] On mobile at 12 products: pagination is visible and the footer starts below the grid + pagination (no overlap/crowding)
-- [ ] Pagination links navigate between pages correctly
+### Core behavior
+- [ ] Section can be added to a collection template from the customizer ("Modern Product Grid")
+- [ ] Grid shows the products of the collection it's placed on
+- [ ] Desktop 4 columns / mobile 2 columns
+- [ ] Even columns (2nd & 4th) offset down ~half a card
+- [ ] Clicking anywhere on the card navigates to the correct product page
 
 ### Edge cases
 - [ ] An empty collection (or the section on a non-collection template) shows a graceful message, not an error
-- [ ] Very long product titles wrap/clamp within the notch without breaking the outline
+- [ ] Very long product titles clamp within the shelf without crossing the outline
 - [ ] Odd numbers of products (partial last row) still render cleanly with the stagger
 
 ### Mobile / responsive
@@ -79,6 +75,43 @@ Mark each item: `[y]` = pass, leave `[ ]` = fail (add a note in brackets). All i
 - [ ] No new global CSS/JS leaking into other sections (styles scoped to this section only)
 
 ## Previous Rounds
+
+### Round 2 — Status: Failed (fixes applied, see Round 3)
+
+Note: user actively tested the outline/notch, hover reveal, and pagination; other items were left blank and deferred to a final pass.
+
+#### Card outline / notch
+#### [FAIL] The outline is one continuous line with a rounded notch at the lower-right
+**User feedback:** The concave/diagonal notch was wrong. Wanted (per "Desktop 2 - Outline Accent Color") the bottom border to run straight, then a **step** (short rounded riser down) into a lower-right shelf, then straight again to the bottom-right corner — no diagonal.
+**Fix:** Replaced the concave-arc path with a **stepped silhouette**: straight bottom edge → convex down-corner → short riser → concave inner corner → lower-right shelf → bottom-right corner. Updated both the inline outline SVG (viewBox now 200×220) and the matching objectBoundingBox clip-path. Card aspect ratio changed to 200/220 to make room for the shelf.
+#### [FAIL] The notch reads as an intentional part of the card shape
+**User feedback:** Same as above — looked like a diagonal cut, not an intentional step.
+**Fix:** Same stepped-shape rework.
+#### [FAIL] The product title sits within the notch area and does not cross/overlap the outline
+**User feedback:** "You made a mistake here" — the title overlapped the outline.
+**Fix:** Title repositioned into the shelf with padding (right 5%, bottom 3.5%, max-width 38%) so it stays clear of the stroke.
+#### [SKIPPED] Outline renders cleanly with no rough edges — not re-tested this round
+
+#### Hover reveal
+#### [PASS] Hovering a card changes the outline color to the accent color
+#### [PASS] The secondary image sweeps down with the elliptical leading edge
+#### [FAIL] At the end of the sweep, the secondary image fully covers the card interior including the lower notched area
+**User feedback:** Still left the lower area unfilled.
+**Fix:** Media now fills the full card silhouette (clipped to the stepped shape) and the reveal ends at `inset(0 0 0 0)`, so the secondary image fills the entire interior down to the stepped bottom.
+#### [PASS] The transition feels premium (not too fast)
+#### [PASS] Moving the mouse away reverses the sweep and restores the primary image
+#### [SKIPPED] Products with only ONE image do not reveal — deferred again
+
+#### Settings / Pagination
+#### [SKIPPED] Products-per-page offers 4 / 8 / 12 and defaults to 8 — not re-tested
+#### [FAIL] At 12 products: pagination stays visible / page navigation works
+**User feedback:** "Pagination is broken now. Second page displays no products and no pagination."
+**Fix:** Root cause was the empty-state guard testing `collection.products.size` *outside* the `{% paginate %}` tag — on `?page=2` that returns an empty set, so the section fell into the "empty" branch (no products, no pagination). Changed the guard to `collection.products_count` (the stable total), which is correct on every page.
+#### [SKIPPED] Accent color / heading / color scheme / padding settings — not re-tested
+#### [SKIPPED] Pagination position/spacing items — blocked by the pagination bug, re-test in Round 3
+
+#### Other sections (core, edge cases, mobile, accessibility, coexistence)
+#### [SKIPPED] Deferred by user — verified in Round 1, to be re-tested at the final pass
 
 ### Round 1 — Status: Failed (fixes applied, see Round 2)
 

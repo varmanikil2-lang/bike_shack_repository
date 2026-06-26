@@ -29,7 +29,7 @@
     <defs>
       <clipPath id="mpg-card-clip-{{ section.id }}" clipPathUnits="objectBoundingBox">
         <path
-          d="M0.08 0 H0.92 A0.08 0.08 0 0 1 1 0.08 V0.77 A0.23 0.23 0 0 1 0.77 1 H0.08 A0.08 0.08 0 0 1 0 0.92 V0.08 A0.08 0.08 0 0 1 0.08 0 Z"
+          d="M0.06 0 H0.94 A0.06 0.0545 0 0 1 1 0.0545 V0.945 A0.06 0.0545 0 0 1 0.94 1 H0.64 A0.06 0.0545 0 0 1 0.58 0.945 V0.855 A0.06 0.0545 0 0 0 0.52 0.8 H0.06 A0.06 0.0545 0 0 1 0 0.745 V0.0545 A0.06 0.0545 0 0 1 0.06 0 Z"
         />
       </clipPath>
     </defs>
@@ -47,7 +47,11 @@
       </div>
     {%- endif -%}
 
-    {%- if collection == nil or collection.products.size == 0 -%}
+    {%- comment -%}
+      Use products_count (stable total) — not collection.products.size, which
+      outside a paginate tag follows the ?page param and is empty on page 2.
+    {%- endcomment -%}
+    {%- if collection == nil or collection.products_count == 0 -%}
       <div class="mpg-empty">
         <p>{{ 'sections.collection_template.empty' | t }}</p>
       </div>
@@ -108,9 +112,9 @@
                   {%- endif -%}
                 </div>
 
-                <svg class="mpg-card__outline" viewBox="0 0 200 200" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                <svg class="mpg-card__outline" viewBox="0 0 200 220" preserveAspectRatio="none" aria-hidden="true" focusable="false">
                   <path
-                    d="M16 0 H184 A16 16 0 0 1 200 16 V154 A46 46 0 0 1 154 200 H16 A16 16 0 0 1 0 184 V16 A16 16 0 0 1 16 0 Z"
+                    d="M12 0 H188 A12 12 0 0 1 200 12 V208 A12 12 0 0 1 188 220 H128 A12 12 0 0 1 116 208 V188 A12 12 0 0 0 104 176 H12 A12 12 0 0 1 0 164 V12 A12 12 0 0 1 12 0 Z"
                     fill="none"
                     stroke="currentColor"
                     stroke-width="1"
