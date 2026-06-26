@@ -1,0 +1,187 @@
+{% comment %} 1. Load assets {% endcomment %}
+{{ 'section-modern-product-grid.css' | asset_url | stylesheet_tag }}
+
+{% comment %} 2. Dynamic styles — padding (Dawn 0.75 mobile multiplier), accent color, stagger offset {% endcomment %}
+{%- style -%}
+  .mpg-{{ section.id }} {
+    --mpg-accent: {{ section.settings.accent_color }};
+  }
+
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{% comment %} 3. Markup {% endcomment %}
+<div class="mpg-{{ section.id }} color-{{ section.settings.color_scheme }} gradient">
+  <div class="page-width section-{{ section.id }}-padding">
+    {%- if section.settings.heading != blank or section.settings.subheading != blank -%}
+      <div class="mpg-header">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="mpg-header__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subheading != blank -%}
+          <p class="mpg-header__subheading">{{ section.settings.subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if collection == nil or collection.products.size == 0 -%}
+      <div class="mpg-empty">
+        <p>{{ 'sections.collection_template.empty' | t }}</p>
+      </div>
+    {%- else -%}
+      {%- paginate collection.products by section.settings.products_per_page -%}
+        <ul class="mpg-grid" role="list">
+          {%- for product in collection.products -%}
+            {%- liquid
+              assign primary_media = product.featured_media
+              assign secondary_media = product.media[1]
+              # Eager-load the first row (4 desktop), lazy-load the rest
+              assign loading = 'lazy'
+              if forloop.index <= 4
+                assign loading = 'eager'
+              endif
+            -%}
+            <li class="mpg-card">
+              <div class="mpg-card__inner">
+                <div class="mpg-card__media">
+                  {%- if primary_media -%}
+                    <img
+                      class="mpg-card__image mpg-card__image--primary"
+                      srcset="
+                        {%- if primary_media.width >= 360 -%}{{ primary_media | image_url: width: 360 }} 360w,{%- endif -%}
+                        {%- if primary_media.width >= 533 -%}{{ primary_media | image_url: width: 533 }} 533w,{%- endif -%}
+                        {%- if primary_media.width >= 720 -%}{{ primary_media | image_url: width: 720 }} 720w,{%- endif -%}
+                        {%- if primary_media.width >= 940 -%}{{ primary_media | image_url: width: 940 }} 940w,{%- endif -%}
+                        {{ primary_media | image_url }} {{ primary_media.width }}w
+                      "
+                      src="{{ primary_media | image_url: width: 533 }}"
+                      sizes="(min-width: 990px) calc((min(100vw, {{ settings.page_width }}px) - 10rem) / 4), (min-width: 750px) calc((100vw - 10rem) / 4), calc((100vw - 3rem) / 2)"
+                      alt="{{ primary_media.alt | escape }}"
+                      width="{{ primary_media.width }}"
+                      height="{{ primary_media.height }}"
+                      loading="{{ loading }}"
+                    >
+                  {%- else -%}
+                    {{ 'product-1' | placeholder_svg_tag: 'mpg-card__image mpg-card__image--primary' }}
+                  {%- endif -%}
+
+                  {%- if secondary_media -%}
+                    <img
+                      class="mpg-card__image mpg-card__image--secondary"
+                      srcset="
+                        {%- if secondary_media.width >= 360 -%}{{ secondary_media | image_url: width: 360 }} 360w,{%- endif -%}
+                        {%- if secondary_media.width >= 533 -%}{{ secondary_media | image_url: width: 533 }} 533w,{%- endif -%}
+                        {%- if secondary_media.width >= 720 -%}{{ secondary_media | image_url: width: 720 }} 720w,{%- endif -%}
+                        {%- if secondary_media.width >= 940 -%}{{ secondary_media | image_url: width: 940 }} 940w,{%- endif -%}
+                        {{ secondary_media | image_url }} {{ secondary_media.width }}w
+                      "
+                      src="{{ secondary_media | image_url: width: 533 }}"
+                      sizes="(min-width: 990px) calc((min(100vw, {{ settings.page_width }}px) - 10rem) / 4), (min-width: 750px) calc((100vw - 10rem) / 4), calc((100vw - 3rem) / 2)"
+                      alt="{{ secondary_media.alt | escape }}"
+                      width="{{ secondary_media.width }}"
+                      height="{{ secondary_media.height }}"
+                      loading="lazy"
+                    >
+                  {%- endif -%}
+                </div>
+
+                <h3 class="mpg-card__title">
+                  <a class="mpg-card__link" href="{{ product.url }}">
+                    <span class="mpg-card__title-text">{{ product.title }}</span>
+                  </a>
+                </h3>
+              </div>
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        {%- if paginate.pages > 1 -%}
+          {% render 'pagination', paginate: paginate, anchor: '' %}
+        {%- endif -%}
+      {%- endpaginate -%}
+    {%- endif -%}
+  </div>
+</div>
+
+{% comment %} 4. Schema {% endcomment %}
+{% schema %}
+{
+  "name": "t:sections.modern-product-grid.name",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "t:sections.modern-product-grid.settings.heading.label"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheading",
+      "label": "t:sections.modern-product-grid.settings.subheading.label"
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 4,
+      "max": 12,
+      "step": 4,
+      "default": 8,
+      "label": "t:sections.modern-product-grid.settings.products_per_page.label"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "default": "#caff00",
+      "label": "t:sections.modern-product-grid.settings.accent_color.label",
+      "info": "t:sections.modern-product-grid.settings.accent_color.info"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "info": "t:sections.all.colors.has_cards_info",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.modern-product-grid.presets.name"
+    }
+  ]
+}
+{% endschema %}
