@@ -20,6 +20,16 @@ Ran `/onboard-theme`. Confirmed this is **stock Shopify Dawn v15.4.1** — no cu
 
 **Open question:** None yet — clean baseline. First feature will set precedent for naming/schema conventions going forward.
 
+## 2026-06-26 — Feature scoped: modern-product-grid
+
+Set up and scoped the first feature (branch `feat-modern-product-grid`). Standalone custom collection-grid section — **Approach A** chosen over extending Dawn's `card-product`/`main-collection-product-grid` (rejected to avoid ripple effects on shared snippets) and over a third-party app (no app does this design).
+
+**Key decisions:** clean grid (no facets), auto-detect current collection (no picker), Dawn-native numbered pagination, product **title only** on cards (the mockup "2025" was competitor inspiration; client has no year), whole-card link (no add-to-cart), dedicated accent-color setting, no hover reveal for single-image products, column stagger kept on mobile. Settings built in from the start; **no custom JS anticipated** (offset/notch/elliptical reveal all pure CSS). Products-per-page 4/8/12, default 8.
+
+**Risks to watch:** using this section on a collection page means losing Dawn's filter/sort sidebar (accepted trade-off); hover reveal depends on products having a 2nd image; elliptical reveal will lean on `clip-path`/`mask` — verify cross-browser during QA.
+
+Full spec in `.claude/features/feature-modern-product-grid/feature.md`. Next: `/plan-feature-implemenation`.
+
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # OUTPUT-project-log.md — v1.0
