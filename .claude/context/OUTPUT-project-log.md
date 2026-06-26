@@ -28,7 +28,9 @@ Set up and scoped the first feature (branch `feat-modern-product-grid`). Standal
 
 **Risks to watch:** using this section on a collection page means losing Dawn's filter/sort sidebar (accepted trade-off); hover reveal depends on products having a 2nd image; elliptical reveal will lean on `clip-path`/`mask` — verify cross-browser during QA.
 
-Full spec in `.claude/features/feature-modern-product-grid/feature.md`. Next: `/plan-feature-implemenation`.
+Full spec in `.claude/features/feature-modern-product-grid/feature.md`.
+
+**Plan done (same day):** 8-step build plan + QA checklist written. Standalone section (`sections/section-modern-product-grid.liquid` + `assets/section-modern-product-grid.css`), **no JS** (hover swap is pure CSS via `:hover`/`:focus-within`). Reuses Dawn `paginate` + `pagination` snippet; deliberate deviation = CSS Grid (not Dawn's flex `.grid`) for the column stagger, scoped to the component. Coexists with Dawn's default grid (no base-file/shared-snippet edits); placement via customizer, dedicated-template decision deferred. Notch outline flagged as the finickiest CSS (mask approach, SVG-stroke fallback). Next: build.
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
