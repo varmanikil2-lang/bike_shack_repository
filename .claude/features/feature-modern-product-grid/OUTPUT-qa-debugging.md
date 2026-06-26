@@ -17,13 +17,13 @@ Status: Testing
 Mark each item: `[y]` = pass, leave `[ ]` = fail (add a note in brackets). Items not re-tested can be left blank — the full re-test happens at the end.
 
 ### Card outline / notch  ← REWORKED THIS ROUND (step shape, not a diagonal)
-- [ ] The bottom outline runs straight, then **steps down** with a short rounded riser into a lower-right shelf, then continues straight to the bottom-right corner — one continuous line, no diagonal. Compare to "Desktop 2 - Outline Accent Color"
+- [The current card shape is still not correct. Please refine only the container outline and text placement so it is closer to the reference file Desktop 5 - Border Closeup.jpg. Focus on the shape of the border, the lower-right notch, and where the title sits. The outline should be a smooth, continuous custom border with more generous rounded outer corners. The bottom edge should not look like a detached or centered cutout; it should stay mostly continuous and then transition into an integrated lower-right notch area. The notch should feel built into the border shape, with a straight lower edge, a softly rounded step/notch section, and a clean continuation toward the right side. The inner notch corner should not be a sharp 90-degree angle; it needs a small rounded curve so the whole shape feels smooth and organic rather than mechanical. The product title should be positioned in the lower-right label area, aligned with the notch, not too low, not pushed into the corner, and not separated from the outline structure. Overall, the container should read as a premium custom card with a continuous rounded outline, an integrated lower-right notch/step, and the title placed neatly within that lower-right notch area.] The bottom outline runs straight, then **steps down** with a short rounded riser into a lower-right shelf, then continues straight to the bottom-right corner — one continuous line, no diagonal. Compare to "Desktop 2 - Outline Accent Color"
 - [ ] The step/shelf reads as an intentional part of the card shape
 - [ ] The product title sits inside the shelf and does NOT cross/overlap the outline stroke
 - [ ] Outline renders cleanly with no rough edges (Chrome, Safari, Firefox)
 
 ### Hover reveal
-- [ ] Hovering a card changes the outline color to the accent color
+- [This is looking good.] Hovering a card changes the outline color to the accent color
 - [ ] The secondary image sweeps down with the elliptical leading edge
 - [ ] At the end of the sweep, the secondary image fully covers the card interior down to the stepped bottom (no unfilled strip)
 - [ ] The transition feels premium (not too fast)
