@@ -1,0 +1,209 @@
+/*
+ * Modern Product Grid
+ * Staggered collection grid with a continuous notched outline (inline SVG)
+ * and a CSS-only elliptical hover reveal of the product's second image.
+ * Self-contained — all selectors are namespaced with `mpg-`.
+ */
+
+.mpg-grid {
+  /* Fallback corner radius (used only if clip-path url() is unsupported).
+     The real shape comes from the inline SVG clip-path / outline path. */
+  --mpg-corner: 6%;
+  --mpg-outline-color: rgba(var(--color-foreground), 0.22);
+  --mpg-reveal-duration: 0.6s;
+  --mpg-reveal-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Fixed-length stagger offset so it can be exactly compensated below. */
+  --mpg-offset: clamp(1.5rem, 9vw, 3.5rem);
+
+  list-style: none;
+  margin: 0;
+  /* Compensate for the transform-offset columns (which add no layout height)
+     so pagination/footer always clear the staggered last row. */
+  padding: 0 0 calc(var(--mpg-offset) + 1rem);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+}
+
+@media screen and (min-width: 750px) {
+  .mpg-grid {
+    --mpg-offset: clamp(2.5rem, 5vw, 5.5rem);
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(1rem, 2.5vw, 2rem);
+  }
+}
+
+/* Clear gap between the grid and Dawn's pagination snippet. */
+.mpg-grid + .pagination-wrapper {
+  margin-top: clamp(2rem, 5vw, 4rem);
+}
+
+/* ---- Stagger -------------------------------------------------------------
+   Even columns sit lower. translateY keeps each column's flow independent. */
+.mpg-card:nth-child(2n) {
+  transform: translateY(var(--mpg-offset));
+}
+
+@media screen and (min-width: 750px) {
+  .mpg-card:nth-child(2n) {
+    transform: none;
+  }
+  .mpg-card:nth-child(4n + 2),
+  .mpg-card:nth-child(4n) {
+    transform: translateY(var(--mpg-offset));
+  }
+}
+
+/* ---- Card ---------------------------------------------------------------- */
+.mpg-card {
+  position: relative;
+  margin: 0;
+}
+
+.mpg-card__inner {
+  position: relative;
+  /* Slightly taller than wide to give room for the bottom-right title shelf.
+     Must match the SVG outline viewBox ratio (200 x 208). */
+  aspect-ratio: 200 / 208;
+}
+
+/* Hidden SVG holding the clip-path definition. */
+.mpg-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* ---- Media + images ------------------------------------------------------
+   Media fills the whole card interior and is clipped to the exact notched
+   silhouette (same shape as the outline), so the image fills inside the
+   outline — including the notch — without bleeding past it. The rounded-rect
+   fallback applies if clip-path url() is unsupported. */
+.mpg-card__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: var(--mpg-corner);
+  overflow: hidden;
+  clip-path: var(--mpg-clip);
+}
+
+.mpg-card__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Secondary image starts clipped to nothing at the top edge; the rounded
+   bottom of the clip gives the elliptical leading edge as it sweeps down,
+   ending fully covering the card (no leftover unfilled area). */
+.mpg-card__image--secondary {
+  clip-path: inset(0 0 100% 0 round 0 0 45% 45% / 0 0 60% 60%);
+  transition: clip-path var(--mpg-reveal-duration) var(--mpg-reveal-ease);
+  will-change: clip-path;
+}
+
+.mpg-card:hover .mpg-card__image--secondary,
+.mpg-card:focus-within .mpg-card__image--secondary {
+  clip-path: inset(0 0 0 0 round 0 0 0 0);
+}
+
+/* ---- Outline (inline SVG, continuous notch) ------------------------------ */
+.mpg-card__outline {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  color: var(--mpg-outline-color);
+  pointer-events: none;
+  transition: color 0.2s ease;
+  overflow: visible;
+}
+
+.mpg-card:hover .mpg-card__outline,
+.mpg-card:focus-within .mpg-card__outline {
+  color: var(--mpg-accent);
+}
+
+/* ---- Title (sits in the bottom-right notch/shelf) ------------------------
+   Centered within the lower-right label area — lifted off the corner and not
+   pushed too low, and padded so it never crosses the outline stroke. */
+.mpg-card__title {
+  position: absolute;
+  right: 4%;
+  bottom: 7%;
+  z-index: 3;
+  max-width: 32%;
+  margin: 0;
+  text-align: right;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+.mpg-card__link {
+  text-decoration: none;
+  color: rgb(var(--color-foreground));
+  text-shadow: 0 1px 3px rgba(var(--color-background), 0.8);
+}
+
+/* Stretch the title link across the whole card so the entire card is
+   clickable, while keeping the title as the real, accessible anchor. */
+.mpg-card__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+}
+
+.mpg-card__link:focus {
+  outline: none;
+}
+
+.mpg-card__title-text {
+  /* Keep long titles from spilling out of the notch. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ---- Header + empty state ------------------------------------------------ */
+.mpg-header {
+  margin-bottom: clamp(1.5rem, 4vw, 3rem);
+  text-align: center;
+}
+
+.mpg-header__heading {
+  margin: 0 0 0.5rem;
+}
+
+.mpg-header__subheading {
+  margin: 0;
+  opacity: 0.8;
+}
+
+.mpg-empty {
+  text-align: center;
+  padding: clamp(2rem, 6vw, 4rem) 0;
+}
+
+/* ---- Reduced motion: cross-fade instead of the sweep --------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .mpg-card__image--secondary {
+    clip-path: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    will-change: opacity;
+  }
+
+  .mpg-card:hover .mpg-card__image--secondary,
+  .mpg-card:focus-within .mpg-card__image--secondary {
+    clip-path: none;
+    opacity: 1;
+  }
+}

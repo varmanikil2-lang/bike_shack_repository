@@ -2475,6 +2475,27 @@
         }
       }
     },
+    "modern-product-grid": {
+      "name": "Modern Product Grid",
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        },
+        "subheading": {
+          "label": "Subheading"
+        },
+        "products_per_page": {
+          "label": "Products per page"
+        },
+        "accent_color": {
+          "label": "Accent color",
+          "info": "Used for the card outline on keyboard focus."
+        }
+      },
+      "presets": {
+        "name": "Modern Product Grid"
+      }
+    },
     "multicolumn": {
       "name": "Multicolumn",
       "settings": {
